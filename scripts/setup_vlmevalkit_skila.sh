@@ -14,8 +14,15 @@ VLM_EVAL_DIR="$1"
 MODEL_PATH="$2"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
+if [[ ! -d "$VLM_EVAL_DIR" ]]; then
+  echo "[Error] VLM_EVAL_DIR does not exist: $VLM_EVAL_DIR"
+  echo "[Hint] Use the real VLMEvalKit path, e.g. /home/you/Projects/VLMEvalKit"
+  exit 1
+fi
+
 if [[ ! -d "$VLM_EVAL_DIR/vlmeval" ]]; then
-  echo "[Error] $VLM_EVAL_DIR does not look like a VLMEvalKit repo (missing vlmeval/)."
+  echo "[Error] $VLM_EVAL_DIR exists but missing $VLM_EVAL_DIR/vlmeval"
+  echo "[Hint] Make sure you pass VLMEvalKit repo root, not a parent directory."
   exit 1
 fi
 
@@ -39,20 +46,12 @@ if import_line not in text:
     text += "\n" + import_line + "\n"
     init_py.write_text(text, encoding="utf-8")
 
-# 2) Ensure vlmeval/config.py imports partial + SkiLaChat and registers supported_VLM entry
+# 2) Register SkiLa in vlmeval/config.py
 config_py = repo / "vlmeval" / "config.py"
 text = config_py.read_text(encoding="utf-8")
 
-if "from functools import partial" not in text:
-    text = "from functools import partial\n" + text
-
-if import_line not in text:
-    # Insert after other vlm imports when possible.
-    marker = "from vlmeval.vlm import *"
-    if marker in text:
-        text = text.replace(marker, marker + "\n" + import_line, 1)
-    else:
-        text = import_line + "\n" + text
+# Clean up old incorrect import injected by previous script versions.
+text = text.replace("from .skila.skila import SkiLaChat\n", "")
 
 entry = f"    'SkiLa': partial(SkiLaChat, model_path='{model_path}'),"
 if "'SkiLa': partial(SkiLaChat" not in text:
@@ -64,5 +63,6 @@ if "'SkiLa': partial(SkiLaChat" not in text:
 config_py.write_text(text, encoding="utf-8")
 print("[Info] Registered SkiLa in vlmeval/config.py and vlmeval/vlm/__init__.py")
 PY
+
 
 echo "[Done] You can now run scripts/eval.sh with MODEL_PATH and VLM_EVAL_DIR."

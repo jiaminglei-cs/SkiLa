@@ -1,6 +1,7 @@
 # 使用 VLMEvalKit 评测 SkiLa（CVBench 2D / 3D）
 
 > 本文档假设你已经完成 SkiLa 权重准备，并单独克隆了 `VLMEvalKit`。
+> 注意：示例命令里的 `/path/to/...` 是占位符，必须替换成你机器上的真实路径。
 
 ## 1) 安装与准备
 
@@ -69,6 +70,7 @@ python run.py --config config_skila_cvbench.json
 
 ## 5) 常见问题
 
+- **`ModuleNotFoundError: No module named 'vlmeval.skila'`**：这是旧版本脚本写入了错误 import。请重新运行 `bash scripts/setup_vlmevalkit_skila.sh <VLMEvalKit路径> <SkiLa模型路径>` 自动修复。
 - **报错找不到 `SkiLa`**：检查 `vlmeval/vlm/__init__.py` 与 `vlmeval/config.py` 是否都已修改。
 - **模型加载失败**：确认 `model_path` 指向包含 `config.json`、tokenizer、权重文件的目录。
 - **显存不足**：在 `supported_VLM` 里传入更保守的生成参数（如 `max_new_tokens`）或降低并发。
