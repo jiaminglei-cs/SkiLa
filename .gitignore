@@ -1,0 +1,6 @@
+*.pth
+*.pyc
+**/__pycache__/
+SkiLa-7B/
+VLMEvalKit/vlmeval.egg-info/
+datasets/
