@@ -66,22 +66,18 @@ bash scripts/train_skila.sh
 ```
 
 ## 📖 Evaluation
-We adopt [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to conduct the evaluation. You can get started as follows:
+We adopt [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to conduct the evaluation.
 
-### 1. Install 
+For evaluating SkiLa on **CVBench 2D / CVBench 3D**, please follow the integration guide in:
 
-```Shell
-cd VLMEvalKit
-pip install -e.
-```
+- `docs_VLMEvalKit_SkiLa.md`
 
-### 2. Inference
+This repo also provides:
 
-```Shell
-bash test.sh
-```
+- `scripts/vlmevalkit/skila.py`: SkiLa adapter class for VLMEvalKit.
+- `scripts/setup_vlmevalkit_skila.sh`: helper script to copy adapter and auto-register `SkiLa` in `vlmeval/config.py` + `vlmeval/vlm/__init__.py`.
 
-See here [[QuickStar](https://github.com/open-compass/VLMEvalKit/blob/main/docs/en/Quickstart.md) | [快速开始](https://github.com/open-compass/VLMEvalKit/blob/main/docs/zh-CN/Quickstart.md)] for more details about arguments.
+See here [[QuickStart](https://github.com/open-compass/VLMEvalKit/blob/main/docs/en/Quickstart.md) | [快速开始](https://github.com/open-compass/VLMEvalKit/blob/main/docs/zh-CN/Quickstart.md)] for more details about arguments.
 
 
 ## 🔑 License
