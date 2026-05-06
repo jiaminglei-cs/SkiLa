@@ -77,11 +77,29 @@ pip install -e.
 
 ### 2. Inference
 
+`test.sh` is **not** included in this repository. In practice you should run `VLMEvalKit/run.py` directly, and pass the model via the interface your local VLMEvalKit version supports.
+
+We provide a compatibility launcher:
+
 ```Shell
-bash test.sh
+# Mode A (if your run.py supports --model-path)
+MODEL_PATH=/path/to/skila/checkpoint \
+VLM_EVAL_DIR=./VLMEvalKit \
+DATASETS="CVBench_2D CVBench_3D" \
+bash scripts/eval_vlmevalkit_example.sh
+
+# Mode B (if your run.py supports --config)
+MODEL_CONFIG=/path/to/your/vlmeval_model_config.py \
+VLM_EVAL_DIR=./VLMEvalKit \
+DATASETS="CVBench_2D CVBench_3D" \
+bash scripts/eval_vlmevalkit_example.sh
 ```
 
-See here [[QuickStar](https://github.com/open-compass/VLMEvalKit/blob/main/docs/en/Quickstart.md) | [快速开始](https://github.com/open-compass/VLMEvalKit/blob/main/docs/zh-CN/Quickstart.md)] for more details about arguments.
+This script will call `python run.py --help` first, then auto-select `--model-path` mode or `--config` mode.
+
+> Note: dataset aliases can vary across VLMEvalKit versions. If `CVBench_2D` / `CVBench_3D` are not recognized, check `python run.py --help` and your local dataset registry.
+
+See here [[QuickStart](https://github.com/open-compass/VLMEvalKit/blob/main/docs/en/Quickstart.md) | [快速开始](https://github.com/open-compass/VLMEvalKit/blob/main/docs/zh-CN/Quickstart.md)] for more details.
 
 
 ## 🔑 License
