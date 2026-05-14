@@ -1,40 +1,37 @@
-# #!/usr/bin/env bash
-# set -euo pipefail
-
-# # Example evaluation script for SkiLa with VLMEvalKit.
-# # Usage:
-# #   MODEL_PATH=/path/to/your/skila/checkpoint \
-# #   WORK_DIR=./outputs/vlmeval \
-# #   bash scripts/eval_vlmevalkit_example.sh
-
-# MODEL_PATH="${MODEL_PATH:-/lllidy/lllidy/Projects/SkiLa/SkiLa-7B}"
-
-# # Optional overrides.
-# VLM_EVAL_DIR="${VLM_EVAL_DIR:-./VLMEvalKit}"
-# WORK_DIR="${WORK_DIR:-./outputs/vlmeval}"
-# MODEL_NAME="${MODEL_NAME:-SkiLa}"
-
-# # Datasets highlighted in the paper table.
-# # Depending on your local VLMEvalKit version, dataset names may differ.
-# DATASETS="${DATASETS:-CVBench_2D CVBench_3D}"
-
-# cd "$VLM_EVAL_DIR"
-
-# python run.py \
-#   --model "$MODEL_NAME" \
-#   --model-path "$MODEL_PATH" \
-#   --data $DATASETS \
-#   --work-dir "$WORK_DIR"
-
-
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 完整 VLMEvalKit evaluation 脚本
-CONFIG_JSON="${CONFIG_JSON:-/lllidy/lllidy/Projects/SkiLa/SkiLa-7B/config_skila.json}"
-VLM_EVAL_DIR="${VLM_EVAL_DIR:-/lllidy/lllidy/Projects/SkiLa/VLMEvalKit}"
+# Evaluate SkiLa with VLMEvalKit on CVBench 2D/3D.
+# Usage:
+#   VLM_EVAL_DIR=/path/to/VLMEvalKit \
+#   MODEL_PATH=/path/to/SkiLa-7B \
+#   bash scripts/eval.sh
+
+VLM_EVAL_DIR="${VLM_EVAL_DIR:-}"
+MODEL_PATH="${MODEL_PATH:-}"
+WORK_DIR="${WORK_DIR:-./outputs/skila_cvbench}"
+MODEL_NAME="${MODEL_NAME:-SkiLa}"
+DATASETS="${DATASETS:-CVBench_2D CVBench_3D}"
+LAUNCHER="${LAUNCHER:-python}"
+NPROC_PER_NODE="${NPROC_PER_NODE:-1}"
+
+if [[ -z "$VLM_EVAL_DIR" || -z "$MODEL_PATH" ]]; then
+  echo "[Error] Please set VLM_EVAL_DIR and MODEL_PATH first."
+  exit 1
+fi
 
 cd "$VLM_EVAL_DIR"
 
-# 只使用 --config，不传 --model 或 --data
-python run.py --config "$CONFIG_JSON"
+if [[ "$LAUNCHER" == "torchrun" ]]; then
+  torchrun --nproc-per-node "$NPROC_PER_NODE" run.py \
+    --model "$MODEL_NAME" \
+    --model-path "$MODEL_PATH" \
+    --data $DATASETS \
+    --work-dir "$WORK_DIR"
+else
+  python run.py \
+    --model "$MODEL_NAME" \
+    --model-path "$MODEL_PATH" \
+    --data $DATASETS \
+    --work-dir "$WORK_DIR"
+fi
